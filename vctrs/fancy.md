@@ -72,6 +72,17 @@ For geospatial equality and raw equality, we need a way to override the equality
 Technically the `vec_proxy_compare()` generic could take care of it. It is possible allowing overriding the comparison operator could be useful for performance though.
 
 
+## Internal representation
+
+Compressed and raw vectors can't be represented by their data because their size wouldn't match the size of data frames when they are included as columns.
+
+For this reason, we need a dummy vector of the actual size.
+
+- The dummy vector could be implemented with ALTREP on recent R. This would make it free in terms of memory and computation.
+
+- The actual vector data would be contained in attributes. All vctrs primitive operations (slice, concatenation, etc) would need to be forwarded to the data.
+
+
 ## Missing values
 
 For compressed vectors, the missing values are encoded natively.
@@ -80,7 +91,6 @@ For raw vectors, there are two options.
 
 1. The proxy could expose an external vector of locations for missing values, arrow-style. This vector could possibly be implemented as a sparse vector, and will need to be part of all operations (slicing, concatenation, ...).
 
-   This feels similar to external dynamic groups.
-
 2. Go with R-style missing values and just allow overriding missingness detection, the same way we'd allow overriding equality / ordering.
 
+3. Use the dummy vector (see *Internal representation* section). Missing values inside the dummy vector could represent missingness.
