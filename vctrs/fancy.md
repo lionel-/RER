@@ -6,7 +6,7 @@ There are three kinds of vectors whose proxy has a different size than the actua
 There are also vectors whose size matches, but which require overriding some primitive vctrs operations such as equality.
 
 
-## Compressed vectors
+### Compressed vectors
 
 These vectors have in common that they wrap another vector type with a vector of indices to map the stored values from compressed space to value space.
 
@@ -33,7 +33,7 @@ These vectors have in common that they wrap another vector type with a vector of
   #> [1] 2 5 9
   ```
 
-## Raw vectors
+### Raw vectors
 
 Unlike compressed vectors, raw vectors are an actual value array. However R hard-code the element size to 8 bits. To make raw vectors useful, we need a way of specifying the bit width of an element.
 
@@ -48,31 +48,31 @@ Having general support for raw vectors might be a good alternative to ALTREP for
 We'd still rely on ALTREP for generated and lazy data.
 
 
-## Geospatial vectors
+### Geospatial vectors
 
 They don't lend themselves well to memory proxies because the computations to determine geospatial equality are complex.
 
 
 # Customisation points
 
-## Size and slice
+### Size and slice
 
 For compressed/expanded vectors, we could either provide a general customisation point for mapping indices from value space to proxy space. However it seems easier to hard-code the different kinds of fancy proxies and special-case them in vctrs.
 
 
-## Equality and hashing
+### Equality and hashing
 
 For compressed vectors, memory equality and hashing is sufficient.
 
 For geospatial equality and raw equality, we need a way to override the equality and hashing operation.
 
 
-## Ordering
+### Ordering
 
 Technically the `vec_proxy_compare()` generic could take care of it. It is possible allowing overriding the comparison operator could be useful for performance though.
 
 
-## Internal representation
+### Internal representation
 
 Compressed and raw vectors can't be represented by their data because their size wouldn't match the size of data frames when they are included as columns.
 
@@ -83,7 +83,7 @@ For this reason, we need a dummy vector of the actual size.
 - The actual vector data would be contained in attributes. All vctrs primitive operations (slice, concatenation, etc) would need to be forwarded to the data.
 
 
-## Missing values
+### Missing values
 
 For compressed vectors, the missing values are encoded natively.
 
